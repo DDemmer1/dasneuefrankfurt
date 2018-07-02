@@ -1,5 +1,6 @@
 package de.uni.koeln.demmer.dennis.model.lucene;
 
+import de.uni.koeln.demmer.dennis.model.Util.Token;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -50,53 +51,37 @@ public class LuceneUtil {
     }
 
 
-    public boolean wordInIndex(String word) throws IOException, ParseException {
+    public Token processToken(Token token) {
+        try {
+            Directory index = new NIOFSDirectory(new File("index").toPath());
+            token = search(token, index,false);
 
+            if (!token.isInWB()) {
+                token = search(token, index,true);
+            }
 
-        Directory index = new NIOFSDirectory(new File("index").toPath());
-
-
-        if(searchFuzzy(word,index)){
-        }else if(!searchWildcardF(word, index)){
-            System.out.println("WORD NOT FOUND! -> remove");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-
-        return false;
+        return token;
     }
 
 
+    private Token search(Token token, Directory index, boolean fuzzy) throws ParseException, IOException {
 
-    private boolean searchWildcardF(String word, Directory index) throws IOException {
 
-        String querystr = word.replaceAll("f", "?");
-
-        Term term = new Term("word", querystr);
-        Query q = new WildcardQuery(term);
-
-        // Suche
-        int hitsPerPage = 5;
-        IndexReader reader = DirectoryReader.open(index);
-        IndexSearcher searcher = new IndexSearcher(reader);
-        TopDocs docs = searcher.search(q, hitsPerPage);
-        ScoreDoc[] hits = docs.scoreDocs;
-
-        if (hits.length > 0) {
-            System.out.println("TREFFER WILDCARD");
-            reader.close();
-            return true;
+        Query q = null;
+        if(fuzzy){
+            String querystr = token.getOrigin();
+            q = new FuzzyQuery(new Term("word",querystr));
         } else {
-            reader.close();
-            return false;
+            String querystr = token.getOrigin();
+            q = new QueryParser("word", new StandardAnalyzer()).parse(querystr);
         }
 
-    }
-
-
-    private boolean searchFuzzy(String word, Directory index) throws ParseException, IOException {
-
-        String querystr = word + "~";
-        Query q = new QueryParser("word", new StandardAnalyzer()).parse(querystr);
 
         // Suche
         int hitsPerPage = 5;
@@ -106,14 +91,22 @@ public class LuceneUtil {
         ScoreDoc[] hits = docs.scoreDocs;
 
         if (hits.length > 0) {
-            System.out.println("TREFFER FUZZY");
-            reader.close();
-            return true;
-        } else{
-            reader.close();
-            return false;
+
+            if(!fuzzy)
+            token.setInWB(true);
+
+            for (int i = 0; i < hits.length; ++i) {
+
+                int docId = hits[i].doc;
+                Document d = searcher.doc(docId);
+                String hit = d.get("word");
+                token.getMostSimiliar().add(hit);
+            }
+
+        } else {
+
+            token.setInWB(false);
         }
+        return token;
     }
-
-
 }
