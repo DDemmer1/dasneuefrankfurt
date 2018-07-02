@@ -19,45 +19,53 @@ import java.io.IOException;
 
 public class LuceneUtil {
 
-    public void buildIndex() throws IOException {
+    /**
+     * Erzeugt einen Invertierten Index im Ordner "Index", aus einer .txt Datei.
+     *
+     * @param path Der Pfad zur .txt Datei
+     * @throws IOException
+     */
+    public void buildIndex(String path) throws IOException {
         StandardAnalyzer analyzer = new StandardAnalyzer();
-
         Directory index = new NIOFSDirectory(new File("index").toPath());
-
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
-
         IndexWriter w = new IndexWriter(index, config);
 
-
         BufferedReader br = new BufferedReader(new FileReader("IncludedWords.txt"));
-        try {
-            String line = br.readLine();
-            System.out.println("Begin Index building");
+        String line = br.readLine();
+        System.out.println("Begin Index building");
 
-            while (line != null) {
-                System.out.println(line);
+        while (line != null) {
+            System.out.println(line);
 
-                Document doc = new Document();
-                doc.add(new StringField("word", line, Field.Store.YES));
-                w.addDocument(doc);
-                line = br.readLine();
+            Document doc = new Document();
+            doc.add(new StringField("word", line, Field.Store.YES));
+            w.addDocument(doc);
+            line = br.readLine();
 
-            }
-        } finally {
-            br.close();
         }
+        br.close();
 
         w.close();
     }
 
-
+    /**
+     * Verarbeitet ein Token und sucht nach Uebereinstimmungen und Aehnlichkeiten im Woerterbuch
+     *
+     * @param token Das zu verarbeitende Token
+     * @return
+     */
     public Token processToken(Token token) {
         try {
-            Directory index = new NIOFSDirectory(new File("index").toPath());
-            token = search(token, index,false);
+            if (Character.isLetterOrDigit(token.getOrigin().charAt(0)) && token.getOrigin().length() >= 1) {
+                Directory index = new NIOFSDirectory(new File("index").toPath());
+                token = search(token, index, false);
 
-            if (!token.isInWB()) {
-                token = search(token, index,true);
+                if (!token.isInWB()) {
+                    token = search(token, index, true);
+                }
+            } else {
+                token.setSpecialChar(true);
             }
 
         } catch (ParseException e) {
@@ -74,9 +82,9 @@ public class LuceneUtil {
 
 
         Query q = null;
-        if(fuzzy){
+        if (fuzzy) {
             String querystr = token.getOrigin();
-            q = new FuzzyQuery(new Term("word",querystr));
+            q = new FuzzyQuery(new Term("word", querystr));
         } else {
             String querystr = token.getOrigin();
             q = new QueryParser("word", new StandardAnalyzer()).parse(querystr);
@@ -92,8 +100,8 @@ public class LuceneUtil {
 
         if (hits.length > 0) {
 
-            if(!fuzzy)
-            token.setInWB(true);
+            if (!fuzzy)
+                token.setInWB(true);
 
             for (int i = 0; i < hits.length; ++i) {
 

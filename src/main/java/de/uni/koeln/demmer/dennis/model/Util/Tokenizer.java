@@ -8,41 +8,17 @@ import java.util.StringTokenizer;
 
 public class Tokenizer {
 
-    public List<Token> tokenizeWithStringTokenizer(String text){
 
-        List<Token> tokenList = new ArrayList<>();
-
-
-        StringTokenizer st = new StringTokenizer(text);
-        while (st.hasMoreTokens()) {
-            tokenList.add(new Token(st.nextToken()));
-        }
-
-        return tokenList;
-    }
-
-
-
-    public List<Token> tokenizeWithSplit(String text){
-
-        List<Token> tokenList = new ArrayList<>();
-
-        String[] tokenArray = text.split("/w");
-
-        for (String token : tokenArray) {
-            tokenList.add(new Token(token));
-
-        }
-
-        return tokenList;
-    }
-
-
-
+    /**
+     * Tokanisiert einen String in @{@link Token} tokenisieren, die nur den Wort Ursprung vermerkt haben.
+     *
+     * @param text Der zu tokenisierende Text
+     * @return Eine Liste mit Tokens
+     */
     public static List<Token> tokenize(String text) {
         List<Token> tokens = new ArrayList<>();
 
-        text = text.toLowerCase(Locale.GERMAN);
+//        text = text.toLowerCase(Locale.GERMAN);
 
         BreakIterator iterator = BreakIterator.getWordInstance(Locale.GERMAN);
         iterator.setText(text);
@@ -51,15 +27,9 @@ public class Tokenizer {
 
         while (end != BreakIterator.DONE) {
             String currentWord = text.substring(start, end);
-
-            if (Character.isLetterOrDigit(currentWord.charAt(0)) && currentWord.length() >= 1) {
-
-                tokens.add(new Token(currentWord));
-            }
-
+            tokens.add(new Token(currentWord));
             start = end;
             end = iterator.next();
-
         }
 
         return tokens;

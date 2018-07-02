@@ -6,22 +6,41 @@ import java.util.Set;
 public class Token {
 
     private String origin;
-    private  boolean inWB;
     private Set<String> mostSimiliar;
+    private  boolean inWB;
+    private  boolean isSpecialChar;
 
-
+    /**
+     * Erzeugt ein @{@link Token}, nur mit einem Wortursprung.
+     * @param origin
+     */
     public Token(String origin){
         this.origin = origin;
         mostSimiliar = new LinkedHashSet<>();
 
     }
 
-    public Token(String origin, boolean inWB, Set<String> mostSimiliar) {
+    /**
+     * Erzeugt ein @{@link Token}
+     * @param origin Das urspruengliche Wort
+     * @param inWB Ob das Wort im Woeterbuch vorhanden ist
+     * @param isSpecialChar Ob das Wort ein Sonderzeichen ist
+     */
+    public Token(String origin, boolean inWB, boolean isSpecialChar) {
 
         mostSimiliar = new LinkedHashSet<>();
         this.origin = origin;
         this.inWB = inWB;
+        this.isSpecialChar = isSpecialChar();
         this.mostSimiliar = mostSimiliar;
+    }
+
+    public boolean isSpecialChar() {
+        return isSpecialChar;
+    }
+
+    public void setSpecialChar(boolean specialChar) {
+        isSpecialChar = specialChar;
     }
 
     public String getOrigin() {
@@ -48,11 +67,16 @@ public class Token {
         this.mostSimiliar = mostSimiliar;
     }
 
+
+
+
+
     @Override
     public String toString() {
         return "Token{" +
                 "origin='" + origin + '\'' +
                 ", inWB=" + inWB +
+                ", isSpecialChar=" + isSpecialChar +
                 ", mostSimiliar=" + mostSimiliar.toString() +
                 '}';
     }
