@@ -1,6 +1,7 @@
-package de.uni.koeln.demmer.dennis.model.lucene;
+package de.uni.koeln.demmer.dennis.model.autocorrect.lucene;
 
-import de.uni.koeln.demmer.dennis.model.Util.Token;
+import de.uni.koeln.demmer.dennis.model.autocorrect.Util.TextProcessor;
+import de.uni.koeln.demmer.dennis.model.autocorrect.Util.Token;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -9,6 +10,7 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 
@@ -16,22 +18,24 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class LuceneUtil {
 
     /**
      * Erzeugt einen Invertierten Index im Ordner "Index", aus einer .txt Datei.
+     * Dabei muss die txt Datei so angelegt sein, dass pro Zeile ein Wort steht
      *
      * @param path Der Pfad zur .txt Datei
      * @throws IOException
      */
-    public void buildIndex(String path) throws IOException {
+    public void buildDictionary(String path) throws IOException {
         StandardAnalyzer analyzer = new StandardAnalyzer();
         Directory index = new NIOFSDirectory(new File("index").toPath());
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         IndexWriter w = new IndexWriter(index, config);
 
-        BufferedReader br = new BufferedReader(new FileReader("IncludedWords.txt"));
+        BufferedReader br = new BufferedReader(new FileReader(path));
         String line = br.readLine();
         System.out.println("Begin Index building");
 
@@ -48,6 +52,32 @@ public class LuceneUtil {
 
         w.close();
     }
+
+    /**
+     * Erzeugt einen Invertierten Index im Ordner "goldstd", aus einer .txt Datei.
+     *
+     * @param path Der Pfad zur .txt Datei des Goldstandards
+     * @throws IOException
+     */
+    public void buildGoldStandard(String path) throws IOException {
+        StandardAnalyzer analyzer = new StandardAnalyzer();
+        Directory index = new NIOFSDirectory(new File("goldstd").toPath());
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
+        IndexWriter w = new IndexWriter(index, config);
+
+
+        System.out.println("Begin Index building");
+
+        String goldstd = TextProcessor.readFile(path, StandardCharsets.ISO_8859_1);
+
+        Document doc = new Document();
+        doc.add(new StringField("word", goldstd, Field.Store.YES));
+        w.addDocument(doc);
+
+
+        w.close();
+    }
+
 
     /**
      * Verarbeitet ein Token und sucht nach Uebereinstimmungen und Aehnlichkeiten im Woerterbuch

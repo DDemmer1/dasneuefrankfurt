@@ -1,4 +1,4 @@
-package de.uni.koeln.demmer.dennis.model.Util;
+package de.uni.koeln.demmer.dennis.model.autocorrect.Util;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

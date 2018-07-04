@@ -1,4 +1,6 @@
-package de.uni.koeln.demmer.dennis.model.Util;
+package de.uni.koeln.demmer.dennis.model.autocorrect.Util;
+
+import de.uni.koeln.demmer.dennis.model.autocorrect.lucene.LuceneUtil;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -8,6 +10,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TextProcessor {
+
+    public String autoCorrect(String origin){
+
+        Tokenizer tokenizer = new Tokenizer();
+
+        List<Token> tokenList = tokenizer.tokenize(origin);
+
+        LuceneUtil util = new LuceneUtil();
+
+
+        for (Token token : tokenList) {
+            util.processToken(token);
+//            System.out.println(token.toString());
+        }
+
+        tokenList = preProcessTokenList(tokenList);
+
+        return getTextFromTokens(tokenList);
+    }
 
 
     public List<String> changeCharacter(Token token,char character){
@@ -39,6 +60,22 @@ public class TextProcessor {
             }
         }
         return text.toString();
+    }
+
+
+    private List<Token> preProcessTokenList(List<Token> tokenList){
+
+        for (int i = 0; i < tokenList.size()-1; i++) {
+           Token current =  tokenList.get(i);
+           Token next = tokenList.get(i+1);
+
+           if(current.isSpecialChar() && current.getOrigin().equals(next.getOrigin())){
+//           if(current.isSpecialChar() && next.isSpecialChar()){
+                tokenList.remove(i);
+
+           }
+        }
+        return tokenList;
     }
 
 

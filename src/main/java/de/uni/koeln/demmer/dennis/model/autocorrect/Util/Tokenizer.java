@@ -1,10 +1,9 @@
-package de.uni.koeln.demmer.dennis.model.Util;
+package de.uni.koeln.demmer.dennis.model.autocorrect.Util;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.StringTokenizer;
 
 public class Tokenizer {
 

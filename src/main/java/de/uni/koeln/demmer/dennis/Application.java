@@ -4,13 +4,14 @@ package de.uni.koeln.demmer.dennis;
 //import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
-import de.uni.koeln.demmer.dennis.model.Util.TextProcessor;
-import de.uni.koeln.demmer.dennis.model.Util.Token;
-import de.uni.koeln.demmer.dennis.model.Util.Tokenizer;
-import de.uni.koeln.demmer.dennis.model.lucene.LuceneUtil;
+import de.uni.koeln.demmer.dennis.model.autocorrect.Util.TextProcessor;
+import de.uni.koeln.demmer.dennis.model.autocorrect.Util.Token;
+import de.uni.koeln.demmer.dennis.model.autocorrect.Util.Tokenizer;
+import de.uni.koeln.demmer.dennis.model.autocorrect.lucene.CosineDocumentSimilarity;
+import de.uni.koeln.demmer.dennis.model.autocorrect.lucene.LuceneUtil;
+import org.apache.lucene.queryparser.classic.ParseException;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -20,36 +21,27 @@ public class Application {
 
     public static void main(String[] args) {
 
+
+
         String origin ="";
         String goldstd ="";
         try {
             origin = TextProcessor.readFile("origin.txt", StandardCharsets.ISO_8859_1);
             goldstd = TextProcessor.readFile("goldstd.txt", StandardCharsets.ISO_8859_1);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-//        Token testToken = new Token("fppfppfppfppfppf");
-
-
         TextProcessor txtProc = new TextProcessor();
-        Tokenizer tokenizer = new Tokenizer();
-
-        List<Token> tokenList = tokenizer.tokenize(origin);
-
-        LuceneUtil util = new LuceneUtil();
+        String output = txtProc.autoCorrect(origin);
 
 
-        for (Token token : tokenList) {
-
-            util.processToken(token);
-
-            System.out.println(token.toString());
-
+        try {
+            double sim = CosineDocumentSimilarity.getCosineSimilarity(goldstd , output);
+            System.out.println(sim);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        System.out.println(txtProc.getTextFromTokens(tokenList));
 
 
     }
