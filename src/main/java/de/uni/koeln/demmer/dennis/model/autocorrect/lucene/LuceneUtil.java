@@ -80,7 +80,8 @@ public class LuceneUtil {
 
 
     /**
-     * Verarbeitet ein Token und sucht nach Uebereinstimmungen und Aehnlichkeiten im Woerterbuch
+     * Verarbeitet ein Token und sucht nach Uebereinstimmungen und Aehnlichkeiten im Woerterbuch.
+     * Alle gefundenen Eintraege werden im Token gespeichert.
      *
      * @param token Das zu verarbeitende Token
      * @return
@@ -109,7 +110,6 @@ public class LuceneUtil {
 
 
     private Token search(Token token, Directory index, boolean fuzzy) throws ParseException, IOException {
-
 
         Query q = null;
         if (fuzzy) {
