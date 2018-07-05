@@ -57,6 +57,14 @@ public class CosineDocumentSimilarity {
         return (v1.dotProduct(v2)) / (v1.getNorm() * v2.getNorm());
     }
 
+
+    public static double getCosineSimilarity(String s1, String s2) throws IOException {
+            return new CosineDocumentSimilarity(s1,s2).getCosineSimilarity();
+
+
+
+    }
+
     private Directory createIndex(String goldstd, String output) throws IOException {
         Directory directory = new RAMDirectory();
         StandardAnalyzer analyzer = new StandardAnalyzer();

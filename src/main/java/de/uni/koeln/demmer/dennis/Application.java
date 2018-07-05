@@ -25,38 +25,40 @@ public class Application {
 
 
 
-        String word = "Gefellfchaft";
+//        String word = "xxfxxfxxfxx";
+//
+//        CharacterChanger charChanger = new CharacterChanger('f','s');
+//
+//        for (String combo : charChanger.getAllCombinations(new Token(word))) {
+//            System.out.println(combo);
+//        }
 
-        CharacterChanger charChanger = new CharacterChanger('f','s');
-
-        for (String combo : charChanger.getAllCombinations(new Token(word))) {
-            System.out.println(combo);
+        String origin ="";
+        String goldstd ="";
+        try {
+            origin = TextProcessor.readFile("origin.txt", StandardCharsets.ISO_8859_1);
+            goldstd = TextProcessor.readFile("goldstd.txt", StandardCharsets.ISO_8859_1);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-//        String origin ="";
-//        String goldstd ="";
-//        try {
-//            origin = TextProcessor.readFile("origin.txt", StandardCharsets.ISO_8859_1);
-//            goldstd = TextProcessor.readFile("goldstd.txt", StandardCharsets.ISO_8859_1);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        TextProcessor txtProc = new TextProcessor();
-//        String output = txtProc.autoCorrect(origin);
-//
-//
-//        Double before = 0.9425723930238676;
-//        System.out.println("Before: \t" + before);
-//        try {
-//            double sim = CosineDocumentSimilarity.getCosineSimilarity(goldstd , output);
-//            System.out.println("After: \t\t" + sim);
-//            System.out.println("******************************");
-//            System.out.println("Difference: " + (before - sim));
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        TextProcessor txtProc = new TextProcessor();
+        String output = txtProc.autoCorrect(origin);
+
+        System.out.println(output);
+
+
+        Double before = 0.9622705744219966;
+        System.out.println("Before: \t" + before);
+        try {
+            double sim = CosineDocumentSimilarity.getCosineSimilarity(goldstd , output);
+            System.out.println("After: \t\t" + sim);
+            System.out.println("******************************");
+            System.out.println("Difference: " + (before - sim));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }

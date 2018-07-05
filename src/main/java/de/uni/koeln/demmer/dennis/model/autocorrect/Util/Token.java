@@ -1,12 +1,12 @@
 package de.uni.koeln.demmer.dennis.model.autocorrect.Util;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Token {
 
     private String origin;
     private Set<String> mostSimiliar;
+    private List<String> fToS;
     private  boolean inWB;
     private  boolean isBlank;
     private  boolean isSpecialChar;
@@ -18,6 +18,7 @@ public class Token {
     public Token(String origin){
         this.origin = origin;
         mostSimiliar = new LinkedHashSet<>();
+        fToS = new ArrayList<>();
 
     }
 
@@ -31,11 +32,11 @@ public class Token {
     public Token(String origin, boolean inWB, boolean isSpecialChar, boolean isBlank) {
 
         mostSimiliar = new LinkedHashSet<>();
+        fToS = new ArrayList<>();
         this.origin = origin;
         this.inWB = inWB;
         this.isBlank = isBlank;
         this.isSpecialChar = isSpecialChar();
-        this.mostSimiliar = mostSimiliar;
     }
 
     public boolean isBlank() {
@@ -78,17 +79,23 @@ public class Token {
         this.mostSimiliar = mostSimiliar;
     }
 
+    public List<String> getfToS() {
+        return fToS;
+    }
 
-
-
+    public void setfToS(List<String> fToS) {
+        this.fToS = fToS;
+    }
 
     @Override
     public String toString() {
         return "Token{" +
                 "origin='" + origin + '\'' +
                 ", inWB=" + inWB +
+                ", isBlank=" + isBlank +
                 ", isSpecialChar=" + isSpecialChar +
                 ", mostSimiliar=" + mostSimiliar.toString() +
+                ", fToS=" + fToS.toString() +
                 '}';
     }
 }

@@ -17,8 +17,6 @@ public class Tokenizer {
     public static List<Token> tokenize(String text) {
         List<Token> tokens = new ArrayList<>();
 
-//        text = text.toLowerCase(Locale.GERMAN);
-
         BreakIterator iterator = BreakIterator.getWordInstance(Locale.GERMAN);
         iterator.setText(text);
         int start = iterator.first();
@@ -26,7 +24,15 @@ public class Tokenizer {
 
         while (end != BreakIterator.DONE) {
             String currentWord = text.substring(start, end);
-            tokens.add(new Token(currentWord));
+            Token token = new Token(currentWord);
+
+            if(currentWord.contains("f")){
+                token.getfToS().addAll(new CharacterChanger('f','s').getAllCombinations(token));
+            }
+            if(currentWord.equals(System.getProperty("line.separator"))||currentWord.equals("\t")|| currentWord.equals(" ")){
+                token.setBlank(true);
+            }
+            tokens.add(token);
             start = end;
             end = iterator.next();
         }

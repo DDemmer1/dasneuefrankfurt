@@ -2,6 +2,7 @@ package de.uni.koeln.demmer.dennis.model.autocorrect.lucene;
 
 import de.uni.koeln.demmer.dennis.model.autocorrect.Util.TextProcessor;
 import de.uni.koeln.demmer.dennis.model.autocorrect.Util.Token;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -95,7 +96,7 @@ public class LuceneUtil {
                 if (!token.isInWB()) {
                     token = search(token, index, true);
                 }
-            } else {
+            } else if (!token.isBlank()) {
                 token.setSpecialChar(true);
             }
 
@@ -111,13 +112,31 @@ public class LuceneUtil {
 
     private Token search(Token token, Directory index, boolean fuzzy) throws ParseException, IOException {
 
+        //Die fToS Liste als erstes abarbeiten
+        if (!token.getfToS().isEmpty() && !fuzzy) {
+
+            for (String ftos : token.getfToS()) {
+
+                String ftosResult = searchFtoS(ftos, index);
+
+                if (!ftosResult.equals("")) {
+                    token.setInWB(true);
+                    token.getMostSimiliar().add(ftosResult);
+                }
+
+            }
+            return token;
+        }
+
+
         Query q = null;
         if (fuzzy) {
             String querystr = token.getOrigin();
             q = new FuzzyQuery(new Term("word", querystr));
         } else {
             String querystr = token.getOrigin();
-            q = new QueryParser("word", new StandardAnalyzer()).parse(querystr);
+//            q = new QueryParser("word", new StandardAnalyzer()).parse(querystr);
+            q = new TermQuery(new Term("word",querystr));
         }
 
 
@@ -130,9 +149,10 @@ public class LuceneUtil {
 
         if (hits.length > 0) {
 
-            if (!fuzzy)
-                token.setInWB(true);
 
+            if (!fuzzy) {
+                token.setInWB(true);
+            }
             for (int i = 0; i < hits.length; ++i) {
 
                 int docId = hits[i].doc;
@@ -145,6 +165,33 @@ public class LuceneUtil {
 
             token.setInWB(false);
         }
+
+        reader.close();
         return token;
     }
+
+
+
+    private String searchFtoS(String ftos, Directory index) throws ParseException, IOException {
+
+        String ftosResult = "";
+        Query q = new TermQuery(new Term("word",ftos));
+
+        int hitsPerPage = 5;
+        IndexReader reader = DirectoryReader.open(index);
+        IndexSearcher searcher = new IndexSearcher(reader);
+        TopDocs docs = searcher.search(q, hitsPerPage);
+        ScoreDoc[] hits = docs.scoreDocs;
+
+        if (hits.length > 0) {
+
+            int docId = hits[0].doc;
+            Document d = searcher.doc(docId);
+            ftosResult = d.get("word");
+
+        }
+        reader.close();
+        return ftosResult;
+    }
+
 }

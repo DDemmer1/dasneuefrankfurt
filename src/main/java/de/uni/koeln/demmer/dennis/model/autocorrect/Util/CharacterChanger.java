@@ -15,8 +15,9 @@ public class CharacterChanger {
     }
 
     /**
-     * Erzeugt alle moeglichen Kombinationen an Strings, bei denen 'oldChar' mit 'newChar' getauscht wurde
-     * @param token Das Token, das den zu bearbeitenden String enthaelt
+     * Erzeugt alle moeglichen Kombinationen an Strings, bei denen 'oldChar' mit 'newChar' getauscht wurde.
+     * Wenn der String 10 oder mehr zu tauschende chars enthaelt wird er unveraendert zurueckgegeben.
+     * @param token Das Token, das den zu bearbeitenden String enthaelt.
      * @return Eine List<String> mit allen Kombinationen der getauschten chars
      */
     public List<String> getAllCombinations(Token token) {
@@ -31,13 +32,20 @@ public class CharacterChanger {
         }
 
         //Binary Combos erzeugen
-        List<List<Integer>> combos = generateBinaryCombo(posF.size());
-
+        List<List<Integer>> combos = null;
+        try {
+            combos = generateBinaryCombo(posF.size());
+        } catch (NumberFormatException e){
+             List<String> list = new ArrayList<>();
+             list.add(token.getOrigin());
+            System.err.println("Format Exception caught. 10 or more oldChars in Token.getOrigin()");
+            return list;
+        }
         //Combos auf den String mappen
         return mapCombosOnString(combos, posF, token);
     }
 
-    private List<List<Integer>> generateBinaryCombo(int n) {
+    private List<List<Integer>> generateBinaryCombo(int n) throws NumberFormatException {
 
         List<List<Integer>> combos = new ArrayList<>();
 
