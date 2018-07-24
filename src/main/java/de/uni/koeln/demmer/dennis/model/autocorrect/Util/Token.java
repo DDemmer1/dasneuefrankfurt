@@ -7,9 +7,11 @@ public class Token {
     private String origin;
     private Set<String> mostSimiliar;
     private List<String> fToS;
+    private int start;
+    private int end;
     private  boolean inWB;
-    private  boolean isBlank;
-    private  boolean isSpecialChar;
+//    private  boolean isBlank;
+//    private  boolean isSpecialChar;
 
     /**
      * Erzeugt ein @{@link Token}, nur mit einem Wortursprung.
@@ -22,38 +24,38 @@ public class Token {
 
     }
 
-    /**
-     * Erzeugt ein @{@link Token}
-     * @param origin Das urspruengliche Wort
-     * @param inWB Ob das Wort im Woeterbuch vorhanden ist
-     * @param inWB Ob das Wort ein Leerzeichen ist
-     * @param isSpecialChar Ob das Wort ein Sonderzeichen ist
-     */
-    public Token(String origin, boolean inWB, boolean isSpecialChar, boolean isBlank) {
+//    /**
+//     * Erzeugt ein @{@link Token}
+//     * @param origin Das urspruengliche Wort
+//     * @param inWB Ob das Wort im Woeterbuch vorhanden ist
+//     * @param inWB Ob das Wort ein Leerzeichen ist
+//     * @param isSpecialChar Ob das Wort ein Sonderzeichen ist
+//     */
+//    public Token(String origin, boolean inWB, boolean isSpecialChar, boolean isBlank) {
+//
+//        mostSimiliar = new LinkedHashSet<>();
+//        fToS = new ArrayList<>();
+//        this.origin = origin;
+//        this.inWB = inWB;
+//        this.isBlank = isBlank;
+//        this.isSpecialChar = isSpecialChar();
+//    }
 
-        mostSimiliar = new LinkedHashSet<>();
-        fToS = new ArrayList<>();
-        this.origin = origin;
-        this.inWB = inWB;
-        this.isBlank = isBlank;
-        this.isSpecialChar = isSpecialChar();
-    }
-
-    public boolean isBlank() {
-        return isBlank;
-    }
-
-    public void setBlank(boolean blank) {
-        isBlank = blank;
-    }
-
-    public boolean isSpecialChar() {
-        return isSpecialChar;
-    }
-
-    public void setSpecialChar(boolean specialChar) {
-        isSpecialChar = specialChar;
-    }
+//    public boolean isBlank() {
+//        return isBlank;
+//    }
+//
+//    public void setBlank(boolean blank) {
+//        isBlank = blank;
+//    }
+//
+//    public boolean isSpecialChar() {
+//        return isSpecialChar;
+//    }
+//
+//    public void setSpecialChar(boolean specialChar) {
+//        isSpecialChar = specialChar;
+//    }
 
     public String getOrigin() {
         return origin;
@@ -87,13 +89,29 @@ public class Token {
         this.fToS = fToS;
     }
 
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    public int getEnd() {
+        return end;
+    }
+
+    public void setEnd(int end) {
+        this.end = end;
+    }
+
     @Override
     public String toString() {
         return "Token{" +
                 "origin='" + origin + '\'' +
                 ", inWB=" + inWB +
-                ", isBlank=" + isBlank +
-                ", isSpecialChar=" + isSpecialChar +
+//                ", isBlank=" + isBlank +
+//                ", isSpecialChar=" + isSpecialChar +
                 ", mostSimiliar=" + mostSimiliar.toString() +
                 ", fToS=" + fToS.toString() +
                 '}';

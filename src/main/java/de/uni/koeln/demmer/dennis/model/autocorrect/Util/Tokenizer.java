@@ -23,16 +23,27 @@ public class Tokenizer {
         int end = iterator.next();
 
         while (end != BreakIterator.DONE) {
-            String currentWord = text.substring(start, end);
-            Token token = new Token(currentWord);
 
-            if(currentWord.contains("f")){
-                token.getfToS().addAll(new CharacterChanger('f','s').getAllCombinations(token));
+
+            String currentWord = text.substring(start, end);
+
+            if (Character.isLetter(currentWord.charAt(0)) && currentWord.length() >= 1) {
+
+                Token token = new Token(currentWord);
+
+                token.setStart(start);
+                token.setEnd(end);
+
+                if (currentWord.contains("f")) {
+                    token.getfToS().addAll(new CharacterChanger('f', 's').getAllCombinations(token));
+                }
+//                if (currentWord.equals(System.getProperty("line.separator")) || currentWord.equals("\t") || currentWord.equals(" ")) {
+//                    token.setBlank(true);
+//                }
+                tokens.add(token);
+
+
             }
-            if(currentWord.equals(System.getProperty("line.separator"))||currentWord.equals("\t")|| currentWord.equals(" ")){
-                token.setBlank(true);
-            }
-            tokens.add(token);
             start = end;
             end = iterator.next();
         }
@@ -40,8 +51,6 @@ public class Tokenizer {
         return tokens;
 
     }
-
-
 
 
 }

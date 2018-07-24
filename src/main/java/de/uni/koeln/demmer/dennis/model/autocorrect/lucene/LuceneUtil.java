@@ -1,8 +1,8 @@
 package de.uni.koeln.demmer.dennis.model.autocorrect.lucene;
 
-import de.uni.koeln.demmer.dennis.model.autocorrect.Util.TextProcessor;
+import de.uni.koeln.demmer.dennis.model.autocorrect.Util.TextPreProcessor;
+import de.uni.koeln.demmer.dennis.model.autocorrect.Util.TextUtil;
 import de.uni.koeln.demmer.dennis.model.autocorrect.Util.Token;
-import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -11,7 +11,6 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
-import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 
@@ -69,7 +68,7 @@ public class LuceneUtil {
 
         System.out.println("Begin Index building");
 
-        String goldstd = TextProcessor.readFile(path, StandardCharsets.ISO_8859_1);
+        String goldstd = TextUtil.readFile(path, StandardCharsets.ISO_8859_1);
 
         Document doc = new Document();
         doc.add(new StringField("word", goldstd, Field.Store.YES));
@@ -96,9 +95,10 @@ public class LuceneUtil {
                 if (!token.isInWB()) {
                     token = search(token, index, true);
                 }
-            } else if (!token.isBlank()) {
-                token.setSpecialChar(true);
             }
+//            else if (!token.isBlank()) {
+//                token.setSpecialChar(true);
+//            }
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -128,16 +128,40 @@ public class LuceneUtil {
             return token;
         }
 
+        String querystr = token.getOrigin();
+
+        boolean isFirstInSentence = false;
+
+
+        if(TextUtil.isAllCaps(querystr)){
+            querystr= querystr.toLowerCase();
+        }
+
+        else if(TextUtil.firstIsCaps(querystr)){
+                String text = TextPreProcessor.getText();
+
+                if(token.getStart()>4 && (text.charAt(token.getStart()-1) == '.' || text.charAt(token.getStart()-2) == '.')){
+                    querystr = querystr.toLowerCase();
+                    isFirstInSentence = true;
+                }
+
+
+        }
+
 
         Query q = null;
         if (fuzzy) {
-            String querystr = token.getOrigin();
+            querystr = querystr.toLowerCase();
             q = new FuzzyQuery(new Term("word", querystr));
         } else {
-            String querystr = token.getOrigin();
+            //LowerCaseFilter
 //            q = new QueryParser("word", new StandardAnalyzer()).parse(querystr);
+
+//            System.out.println(querystr);
+            //Kein LowerCaseFilter
             q = new TermQuery(new Term("word",querystr));
         }
+
 
 
         // Suche
@@ -158,7 +182,15 @@ public class LuceneUtil {
                 int docId = hits[i].doc;
                 Document d = searcher.doc(docId);
                 String hit = d.get("word");
-                token.getMostSimiliar().add(hit);
+
+                if (isFirstInSentence) {
+                    char[] carray = hit.toCharArray();
+                    carray[0] = Character.toUpperCase(carray[0]);
+                    token.getMostSimiliar().add(new String(carray));
+
+                } else {
+                    token.getMostSimiliar().add(hit);
+                }
             }
 
         } else {
@@ -192,6 +224,27 @@ public class LuceneUtil {
         }
         reader.close();
         return ftosResult;
+    }
+
+
+    public void addWBEntry(String word){
+
+        try {
+            StandardAnalyzer analyzer = new StandardAnalyzer();
+            Directory index = new NIOFSDirectory(new File("index").toPath());
+            IndexWriterConfig config = new IndexWriterConfig(analyzer);
+            config.setOpenMode(IndexWriterConfig.OpenMode.APPEND);
+            IndexWriter w = new IndexWriter(index,config);
+            Document doc = new Document();
+            doc.add(new StringField("word", word, Field.Store.YES));
+            w.addDocument(doc);
+            w.close();
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
