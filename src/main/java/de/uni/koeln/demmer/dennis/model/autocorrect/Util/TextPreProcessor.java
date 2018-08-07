@@ -27,12 +27,9 @@ public class TextPreProcessor {
     }
 
 
-    private static String preProcessText(String text){
+    public static String preProcessText(String text){
 
         text = concatSeperatedWords(text);
-
-
-
 
         return text;
     }
@@ -42,16 +39,20 @@ public class TextPreProcessor {
 
     private static String concatSeperatedWords(String text){
 
-
+        System.out.println("Concate Sep");
         char[] textArray = text.toCharArray();
 
         for (int i = 0; i < textArray.length-1; i++) {
             char current = textArray[i];
             char next = textArray[i+1];
 
-            if (current == '-' && next =='\n'){
+            if (current == '-' && next == System.lineSeparator().charAt(0)){
                 textArray = ArrayUtils.remove(textArray, i);
-                textArray = ArrayUtils.remove(textArray, i);
+
+                for (int j = 0; j < System.lineSeparator().length(); j++) {
+                    textArray = ArrayUtils.remove(textArray, i);
+                }
+
 
             }
 

@@ -1,40 +1,34 @@
 package de.uni.koeln.demmer.dennis.model.autocorrect.Util;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
 import java.util.List;
 
 public class Autocorrecter {
 
+    public Token getBestGuess(Token token){
 
-    public static String getAutocorrectText(List<Token> tokens){
+        //TODO hmm implementation
 
-        StringBuffer buffer = new StringBuffer();
+        return token;
 
-        int index = 0;
-        for (Token token: tokens) {
-            buffer.append(token.getOrigin());
-            if(index%10 == 0){
-                buffer.append("\n");
+    }
+
+
+    public Document autocorrect(Document doc){
+
+
+        for (int i = 0; i < doc.getElementsByTagName("word").getLength(); i++) {
+
+            Node word = doc.getElementsByTagName("word").item(i);
+
+            if(word.getAttributes().getLength()>=2){
+                String bestGuess = word.getAttributes().item(0).getTextContent();
+                doc.getElementsByTagName("word").item(i).setTextContent(bestGuess);
             }
-            else{
-                buffer.append(" ");
-            }
-            index++;
         }
-
-        return buffer.toString();
+        return doc;
     }
 
-
-    public String getTaggedText(List<Token> tokens){
-
-
-        return "";
-    }
-
-
-    public String getCorrectedText(List<Token> tokens){
-
-
-        return "";
-    }
 }

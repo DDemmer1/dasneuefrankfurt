@@ -30,24 +30,24 @@ public class TokenProcessor {
         return tokenList;
     }
 
-    public String autoCorrect(String origin) {
-
-        Tokenizer tokenizer = new Tokenizer();
-        List<Token> tokenList = tokenizer.tokenize(origin);
-
-        LuceneUtil util = new LuceneUtil();
-
-        for (Token token : tokenList) {
-            util.processToken(token);
-//            System.out.println(token.toString());
-//            System.out.println(ReflectionToStringBuilder.toString(token, ToStringStyle.MULTI_LINE_STYLE));
-        }
-
-//        tokenList = preProcessTokenList(tokenList);
-//        tokenList = preProcessTokenList(tokenList);
-
-        return Autocorrecter.getAutocorrectText(tokenList);
-    }
+//    public String autoCorrect(String origin) {
+//
+//        Tokenizer tokenizer = new Tokenizer();
+//        List<Token> tokenList = tokenizer.tokenize(origin);
+//
+//        LuceneUtil util = new LuceneUtil();
+//
+//        for (Token token : tokenList) {
+//            util.processToken(token);
+////            System.out.println(token.toString());
+////            System.out.println(ReflectionToStringBuilder.toString(token, ToStringStyle.MULTI_LINE_STYLE));
+//        }
+//
+////        tokenList = preProcessTokenList(tokenList);
+////        tokenList = preProcessTokenList(tokenList);
+//
+//        return Autocorrecter.getAutocorrectText(tokenList);
+//    }
 
 
     public String getTextFromTokens(List<Token> tokens) {
