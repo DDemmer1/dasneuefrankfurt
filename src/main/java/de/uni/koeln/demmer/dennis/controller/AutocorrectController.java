@@ -41,15 +41,6 @@ public class AutocorrectController {
         Document xml = xmlBuilder.buildXML();
 
 
-//        Autocorrecter autocorrecter = new Autocorrecter();
-
-//        Document corrected = autocorrecter.autocorrect(xml);
-
-//        System.out.println(corrected.getElementsByTagName("text").item(0).getTextContent());
-
-
-
-
         return TextUtil.readFile(xmlBuilder.getResult().getPath(),StandardCharsets.UTF_8);
 
     }
@@ -57,9 +48,8 @@ public class AutocorrectController {
 
 
     @RequestMapping(path = "/correct", produces = "application/xml", method = RequestMethod.POST)
-    public String correct(HttpServletRequest request , @RequestBody  String input) throws IOException {
+    public String correct(@RequestBody  String input) throws IOException {
 
-//        String input = request.getParameter("text");
         System.out.println(input);
         TextPreProcessor prePro = new TextPreProcessor(input);
         String text = TextPreProcessor.getText();
@@ -72,13 +62,6 @@ public class AutocorrectController {
 
         XMLBuilder xmlBuilder = new XMLBuilder(tokenList);
         Document xml = xmlBuilder.buildXML();
-
-//        try {
-//            Thread.sleep(1000);
-//            System.out.println("sleep");
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
 
         return TextUtil.readFile(xmlBuilder.getResult().getPath(),StandardCharsets.UTF_8);
     }
