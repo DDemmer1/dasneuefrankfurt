@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Named-entity recognition Web API</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+
+</head>
+
+<body style="min-height: 75rem">
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+
+
+    <a class="navbar-brand" href="#">NER API</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Documentation</a>
+            </li>
+        </ul>
+        <form class="form-inline mt-2 mt-md-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+</nav>
+
+<main role="main" class="container">
+    <div style="background-color: #E9E9E9" class="jumbotron">
+        <h1>Named-entity recognition Web API</h1>
+        <p class="lead">This web API provides you with a basic named-entity recognition and auto-correct
+            functionality.</p>
+        <!--<a class="btn btn-lg btn-primary" href="#" role="button">View documentation &raquo;</a>-->
+    </div>
+    <br>
+    <br>
+
+    <!------------------------Named-entity recognition----------------------------->
+    <h2>Named-entity recognition</h2>
+    <hr>
+    <p>The main method of this web API is called via <code>/ner</code>. The method accepts a plain text
+        and answers with a XML file.</p>
+    <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
+        <div class=" text-center container">
+            <!-- Target -->
+            <code>$</code><code style="color: black" id="ner"> curl -d "Das ist ein Test von Dennis Demmer" -H
+            "Content-Type: text/plain" -X POST http://ddemmmer.ngrok.io/ner</code>
+            <!-- Trigger -->
+            <button style="padding: 2px 8px 5px 8px;" class="btn" data-clipboard-target="#ner">
+                <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+    </div>
+
+    <h3 style="font-size: 15pt">Output:</h3>
+    <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
+    <pre class="lead"><xmp>        <?xml version="1.0" encoding="UTF-8"?>
+        <text>
+            Das ist ein Test von <entity id="0" absoluteFreq="1" begin="21" end="34">Dennis Demmer</entity>.
+        </text></xmp></pre>
+    </div>
+    <br>
+    <br>
+
+
+    <!---------------------------Autocorrect---------------------------->
+    <h2>Autocorrect</h2>
+    <hr>
+    <p>This method can be used to correct a text before handing it over to the named-entity recognition. You can call
+        the method with <code>/correct</code>. You will get a tagged XML file which suggests a 'best guess' for every
+        word, as well as a set of up to five possible correction options. At this point only the german language is supported.</p>
+    <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
+        <div class=" text-center container">
+            <!-- Target -->
+            <code>$</code><code style="color: black" id="correct"> curl -d "Das ist ein Test von Dennis Demmer" -H
+            "Content-Type: text/plain" -X POST http://ddemmmer.ngrok.io/correct</code>
+            <!-- Trigger -->
+            <button style="padding: 2px 8px 5px 8px;" class="btn" data-clipboard-target="#correct">
+                <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+    </div>
+
+    <h3 style="font-size: 15pt">Output:</h3>
+    <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
+    <pre class="lead"><xmp>        <?xml version="1.0" encoding="UTF-8"?>
+        <text>
+            <word bestGuess="Das" id="0" inWB="true" mostSimilar="Das">Das</word>
+            <word bestGuess="ist" id="1" inWB="true" mostSimilar="ist">ist</word>
+            <word bestGuess="ein" id="2" inWB="true" mostSimilar="ein">ein</word>
+            <word bestGuess="Test" id="3" inWB="true" mostSimilar="Test">Test</word>
+            <word bestGuess="von" id="4" inWB="true" mostSimilar="von">von</word>
+            <word bestGuess="Dennis" id="5" inWB="false" mostSimilar="Dennis Tennis Adenins Benins Fennes">Dennis</word>
+            <word bestGuess="Demmer" id="6" inWB="false" mostSimilar="Demmer dummer dämmer dümmer Beamer">Demmer</word>
+        </text></xmp></pre>
+    </div>
+    <br>
+    <br>
+
+    <!---------------------------Upload Text---------------------------->
+    <h2>Upload .txt file</h2>
+    <hr>
+    <p>With <code>/correct/txt</code> or <code>ner/txt</code> you can upload whole txt files to the web API's
+        named-entity recognition or autocorrection. The output will be the same as in <code>/ner</code></p>
+    <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
+        <div class=" text-center container">
+            <!-- Target -->
+            <code>$</code><code style="color: black" id="uploadtxt"> curl -d "@test.txt" -H "Content-Type:
+            application/txt" -X POST http://ddemmmer.ngrok.io/uploadtxt</code>
+            <!-- Trigger -->
+            <button style="padding: 2px 8px 5px 8px;" class="btn" data-clipboard-target="#uploadtxt">
+                <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+    </div>
+
+
+    <br>
+    <br>
+    <br>
+
+    <!---------------------------Upload ZIP---------------------------->
+    <h2>Upload .zip file</h2>
+    <hr>
+    <p>Use <code>/correct/zip</code> or <code>/ner/zip/{autocorrect true/false}</code> to upload a ZIP archive containing one or multiple .txt files. If you choose to autocorrect every .txt</p>
+    <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
+        <div class=" text-center container">
+            <!-- Target -->
+            <code>$</code><code style="color: black" id="uploadzip"> curl -d "@test.zip" -H "Content-Type:
+            application/zip" -X POST http://ddemmmer.ngrok.io/correct</code>
+            <!-- Trigger -->
+            <button style="padding: 2px 8px 5px 8px;" class="btn" data-clipboard-target="#uploadzip">
+                <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
+            </button>
+        </div>
+    </div>
+    <br>
+
+</main>
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+
+<!--Copy to Clipboard-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+<script>new ClipboardJS('.btn');</script>
+</body>
+</html>
