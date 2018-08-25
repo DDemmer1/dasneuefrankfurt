@@ -12,14 +12,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
-
 </head>
 
 <body style="min-height: 75rem">
 
+<!------------------------Navbar----------------------------->
+
+
 <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-
-
     <a class="navbar-brand" href="#">NER API</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,13 +40,13 @@
         </form>
     </div>
 </nav>
+<!------------------------Jumbotron----------------------------->
 
 <main role="main" class="container">
     <div style="background-color: #E9E9E9" class="jumbotron">
         <h1>Named-entity recognition Web API</h1>
         <p class="lead">This web API provides you with a basic named-entity recognition and auto-correct
             functionality.</p>
-        <!--<a class="btn btn-lg btn-primary" href="#" role="button">View documentation &raquo;</a>-->
     </div>
     <br>
     <br>
@@ -56,23 +56,45 @@
     <hr>
     <p>The main method of this web API is called via <code>/ner</code>. The method accepts a plain text
         and answers with a XML file.</p>
+    <p>Curl:</p>
     <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
         <div class=" text-center container">
             <!-- Target -->
             <code>$</code><code style="color: black" id="ner"> curl -d "Das ist ein Test von Dennis Demmer" -H
             "Content-Type: text/plain" -X POST http://ddemmmer.ngrok.io/ner</code>
             <!-- Trigger -->
-            <button style="padding: 2px 8px 5px 8px;" class="btn" data-clipboard-target="#ner">
+            <button style="padding: 2px 8px 5px 8px;position: relative;left:10%;" class="btn" data-clipboard-target="#ner">
                 <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
             </button>
         </div>
     </div>
 
+    <br>
+    <p>JQuery 3.2.1:</p>
+    <div class="" style="background-color: #E9E9E9; border-radius: 2px;">
+        <!-- Target -->
+        <code style="color: black; font-size: 12pt;" id="ner-jquery"><pre>         $.ajax({
+             dataType: "xml",                                                //Specify callback
+             method: "POST",                                                 //HTTP Method
+             contentType: "text/plain",                                      //Input type
+             data: "your text here",                                         //String to analyze
+             url: "http://ddemmmer.ngrok.io/ner"                             //URL to send the request to
+         }).then(function (xml) {
+             console.log(xml);                                               //Do something with the output xml
+         }</pre>
+        </code>
+        <!-- Trigger -->
+        <button style="padding: 2px 8px 5px 8px; position: relative; left:97%;" class="btn" data-clipboard-target="#ner-jquery">
+            <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
+        </button>
+    </div>
+    <br>
+
     <h3 style="font-size: 15pt">Output:</h3>
     <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
     <pre class="lead"><xmp>        <?xml version="1.0" encoding="UTF-8"?>
         <text>
-            Das ist ein Test von <entity id="0" absoluteFreq="1" begin="21" end="34">Dennis Demmer</entity>.
+            Das ist ein Test von <name id="0" absoluteFreq="1" begin="21" end="34">Dennis Demmer</name>.
         </text></xmp></pre>
     </div>
     <br>
@@ -84,18 +106,40 @@
     <hr>
     <p>This method can be used to correct a text before handing it over to the named-entity recognition. You can call
         the method with <code>/correct</code>. You will get a tagged XML file which suggests a 'best guess' for every
-        word, as well as a set of up to five possible correction options. At this point only the german language is supported.</p>
+        word, as well as a set of up to five possible correction options. At this point only the <b>german language</b>
+        is supported.</p>
+    <p>Curl:</p>
     <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
         <div class=" text-center container">
             <!-- Target -->
             <code>$</code><code style="color: black" id="correct"> curl -d "Das ist ein Test von Dennis Demmer" -H
             "Content-Type: text/plain" -X POST http://ddemmmer.ngrok.io/correct</code>
             <!-- Trigger -->
-            <button style="padding: 2px 8px 5px 8px;" class="btn" data-clipboard-target="#correct">
+            <button style="padding: 2px 8px 5px 8px;position: relative;left:8%;" class="btn" data-clipboard-target="#correct">
                 <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
             </button>
         </div>
     </div>
+    <br>
+    <p>JQuery 3.2.1:</p>
+    <div class="" style="background-color: #E9E9E9; border-radius: 2px;">
+        <!-- Target -->
+        <code style="color: black; font-size: 12pt;" id="autocorrect-jquery"><pre>         $.ajax({
+             dataType: "xml",                                                //Specify callback
+             method: "POST",                                                 //HTTP Method
+             contentType: "text/plain",                                      //Input type
+             data: "your text here",                                         //String to analyze
+             url: "http://ddemmmer.ngrok.io/correct"                         //URL to send the request to
+         }).then(function (xml) {
+             console.log(xml);                                               //Do something with the output xml
+         }</pre>
+        </code>
+        <!-- Trigger -->
+        <button style="padding: 2px 8px 5px 8px; position: relative;left:97%;" class="btn" data-clipboard-target="#autocorrect-jquery">
+            <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
+        </button>
+    </div>
+    <br>
 
     <h3 style="font-size: 15pt">Output:</h3>
     <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
@@ -118,17 +162,38 @@
     <hr>
     <p>With <code>/correct/txt</code> or <code>ner/txt</code> you can upload whole txt files to the web API's
         named-entity recognition or autocorrection. The output will be the same as in <code>/ner</code></p>
+    <p>Curl:</p>
     <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
         <div class=" text-center container">
             <!-- Target -->
             <code>$</code><code style="color: black" id="uploadtxt"> curl -d "@test.txt" -H "Content-Type:
             application/txt" -X POST http://ddemmmer.ngrok.io/uploadtxt</code>
             <!-- Trigger -->
-            <button style="padding: 2px 8px 5px 8px;" class="btn" data-clipboard-target="#uploadtxt">
+            <button style="padding: 2px 8px 5px 8px;position: relative;left:14.9%;" class="btn" data-clipboard-target="#uploadtxt">
                 <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
             </button>
         </div>
     </div>
+    <br>
+    <p>JQuery 3.2.1:</p>
+    <div class="" style="background-color: #E9E9E9; border-radius: 2px;">
+        <!-- Target -->
+        <code style="color: black; font-size: 12pt;" id="upload-text-jquery"><pre>         $.ajax({
+             dataType: "xml",                                                //Specify callback
+             method: "POST",                                                 //HTTP Method
+             contentType: "text/plain",                                      //Input type
+             data: "your text here",                                         //String to analyze
+             url: "http://ddemmmer.ngrok.io/correct"                         //URL to send the request to
+         }).then(function (xml) {
+             console.log(xml);                                               //Do something with the output xml
+         }</pre>
+        </code>
+        <!-- Trigger -->
+        <button style="padding: 2px 8px 5px 8px; position: relative;left:97%;" class="btn" data-clipboard-target="#upload-text-jquery">
+            <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
+        </button>
+    </div>
+    <br>
 
 
     <br>
@@ -138,17 +203,38 @@
     <!---------------------------Upload ZIP---------------------------->
     <h2>Upload .zip file</h2>
     <hr>
-    <p>Use <code>/correct/zip</code> or <code>/ner/zip/{autocorrect true/false}</code> to upload a ZIP archive containing one or multiple .txt files. If you choose to autocorrect every .txt</p>
+    <p>Use <code>/correct/zip</code> or <code>/ner/zip/{autocorrect true/false}</code> to upload a ZIP archive
+        containing one or multiple .txt files. If you choose to autocorrect every .txt</p>
+    <p>Curl:</p>
     <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
         <div class=" text-center container">
             <!-- Target -->
             <code>$</code><code style="color: black" id="uploadzip"> curl -d "@test.zip" -H "Content-Type:
             application/zip" -X POST http://ddemmmer.ngrok.io/correct</code>
             <!-- Trigger -->
-            <button style="padding: 2px 8px 5px 8px;" class="btn" data-clipboard-target="#uploadzip">
+            <button style="padding: 2px 8px 5px 8px;position: relative;left:15.4%;" class="btn" data-clipboard-target="#uploadzip">
                 <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
             </button>
         </div>
+    </div>
+    <br>
+    <p>JQuery 3.2.1:</p>
+    <div class="" style="background-color: #E9E9E9; border-radius: 2px;">
+        <!-- Target -->
+        <code style="color: black; font-size: 12pt;" id="upload-zip-jquery"><pre>         $.ajax({
+             dataType: "xml",                                                //Specify callback
+             method: "POST",                                                 //HTTP Method
+             contentType: "text/plain",                                      //Input type
+             data: "your text here",                                         //String to analyze
+             url: "http://ddemmmer.ngrok.io/correct"                         //URL to send the request to
+         }).then(function (xml) {
+             console.log(xml);                                               //Do something with the output xml
+         }</pre>
+        </code>
+        <!-- Trigger -->
+        <button style="padding: 2px 8px 5px 8px; position: relative;left:97%;" class="btn" data-clipboard-target="#upload-zip-jquery">
+            <img style="max-width: 15px" src="img/clippy.svg" alt="Copy to clipboard">
+        </button>
     </div>
     <br>
 
@@ -170,5 +256,7 @@
 <!--Copy to Clipboard-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
 <script>new ClipboardJS('.btn');</script>
+<script src="js/properties.js"></script>
+
 </body>
 </html>
