@@ -5,6 +5,7 @@ import org.w3c.dom.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -95,7 +96,11 @@ public class XMLBuilder {
 
             // write the content into xml file
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
             Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             DOMSource source = new DOMSource(doc);
             File xmlFile = new File("taggedText.xml");
             StreamResult result = new StreamResult(xmlFile);
@@ -103,7 +108,6 @@ public class XMLBuilder {
 
             streamResult = xmlFile;
 
-//            System.out.println(doc.getElementsByTagName("text").item(0).getTextContent());
 
             System.out.println("File saved!");
             return doc;
