@@ -39,7 +39,6 @@ public class TextPreProcessor {
 
     private static String concatSeperatedWords(String text){
 
-        System.out.println("Concate Sep");
         char[] textArray = text.toCharArray();
 
         for (int i = 0; i < textArray.length-1; i++) {

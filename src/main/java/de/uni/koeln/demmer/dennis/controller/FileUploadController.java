@@ -137,8 +137,9 @@ public class FileUploadController {
 
             //NER
             try {
+                String fracturCorrected = new Autocorrecter().fracturCorrect(text);
                 DNFUtil.clearCheiron();
-                Cheiron.findEntitys(text);
+                Cheiron.findEntitys(fracturCorrected);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -20,6 +20,11 @@ public class NERcontroller {
     public String ner(@RequestBody  String text) throws IOException {
 
         try {
+
+
+
+
+
             DNFUtil.clearCheiron();
             Cheiron.findEntitys(text);
         } catch (Exception e) {
