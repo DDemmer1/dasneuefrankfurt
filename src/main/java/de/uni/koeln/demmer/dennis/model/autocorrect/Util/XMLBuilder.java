@@ -13,8 +13,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -107,7 +105,7 @@ public class XMLBuilder {
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             DOMSource source = new DOMSource(doc);
-            File xmlFile = new File("taggedText.xml");
+            File xmlFile = new File("data/tmp/taggedText.xml");
             StreamResult result = new StreamResult(xmlFile);
             transformer.transform(source, result);
 

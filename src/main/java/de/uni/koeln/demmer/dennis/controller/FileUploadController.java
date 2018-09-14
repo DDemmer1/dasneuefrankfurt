@@ -10,9 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -22,6 +20,9 @@ import DnfWrapper.DNFUtil;
 import de.uni.koeln.demmer.dennis.controller.storage.StorageFileNotFoundException;
 import de.uni.koeln.demmer.dennis.controller.storage.StorageService;
 import de.uni.koeln.demmer.dennis.model.autocorrect.Util.*;
+import de.uni.koeln.demmer.dennis.model.ner.util.CheironParser;
+import de.uni.koeln.demmer.dennis.model.ner.util.NamedEntity;
+import de.uni.koeln.demmer.dennis.model.ner.util.NerXmlBuilder;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -43,53 +44,19 @@ import org.w3c.dom.Text;
 @RestController
 public class FileUploadController {
 
-    private final StorageService storageService;
+//    private final StorageService storageService;
 
-    @Autowired
-    public FileUploadController(StorageService storageService) {
-        this.storageService = storageService;
-    }
-
-//    @GetMapping("/")
-//    public String listUploadedFiles(Model model) throws IOException {
-//
-//        model.addAttribute("files", storageService.loadAll().map(
-//                path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
-//                        "serveFile", path.getFileName().toString()).build().toString())
-//                .collect(Collectors.toList()));
-//
-//        return "uploadForm";
+//    @Autowired
+//    public FileUploadController(StorageService storageService) {
+//        this.storageService = storageService;
 //    }
 
-//    @GetMapping("/files/{filename:.+}")
-//    @ResponseBody
-//    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-//
-//        Resource file = storageService.loadAsResource(filename);
-//        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-//                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
-//    }
 
     @PostMapping("/uploadtxt")
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
             RedirectAttributes redirectAttributes) throws IOException {
 
-//        storageService.store(file);
-//        redirectAttributes.addFlashAttribute("message",
-//                "You successfully uploaded " + file.getOriginalFilename() + "!");
-//
-//        File text =storageService.load(file.getOriginalFilename()).toFile();
 
-//        File convFile = null;
-//        try {
-//            convFile = new File(file.getOriginalFilename());
-//            convFile.createNewFile();
-//            FileOutputStream fos = new FileOutputStream(convFile);
-//            fos.write(file.getBytes());
-//            fos.close();
-//        } catch (Exception e){
-//
-//        }
 
         File convFile = FileConverter.convertToFile(file);
 
@@ -122,7 +89,6 @@ public class FileUploadController {
     public ResponseEntity<Resource> handleZIPUpload(@RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) throws IOException {
 
-        FileUtils.cleanDirectory(new File("data/ner"));
 
         File convFile = FileConverter.convertToFile(file);
         List<File> unpacked = FileConverter.unpackZIP(convFile);
@@ -133,7 +99,7 @@ public class FileUploadController {
 
         int i = 0;
         for (File unpackedFile: unpacked) {
-            String text = TextUtil.readFile(unpackedFile.getPath(),StandardCharsets.ISO_8859_1);
+            String text = TextUtil.readFile(unpackedFile.getPath(),StandardCharsets.UTF_8);
 
             //NER
             try {
@@ -143,6 +109,11 @@ public class FileUploadController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+
+            NerXmlBuilder nerXmlBuilder = new NerXmlBuilder();
+            List<NamedEntity> nerList = new CheironParser().parseCheironXML(new File("data/out/text.xml"));
+            nerXmlBuilder.buildXML(nerList,text);
 
             File xmloutput = new File("data/out/text.xml");
             File toZIP = new File("data/ner/text"+i+".xml");
@@ -154,9 +125,6 @@ public class FileUploadController {
             results.add(new File("data/ner/text"+j+".xml"));
         }
 
-
-
-        System.out.println(results.toString());
         File resultZIP = FileConverter.convertTozip(results);
 
         HttpHeaders headers = new HttpHeaders(); headers.add(HttpHeaders.CONTENT_DISPOSITION
@@ -176,11 +144,11 @@ public class FileUploadController {
 
 
 
-
-    @ExceptionHandler(StorageFileNotFoundException.class)
-    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-        return ResponseEntity.notFound().build();
-    }
+//
+//    @ExceptionHandler(StorageFileNotFoundException.class)
+//    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+//        return ResponseEntity.notFound().build();
+//    }
 
 
 

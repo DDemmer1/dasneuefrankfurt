@@ -15,7 +15,7 @@ public class FileConverter {
     public static File convertToFile(MultipartFile file) {
         File convFile = null;
         try {
-            convFile = new File(file.getOriginalFilename());
+            convFile = new File("data/tmp/" + file.getOriginalFilename());
             convFile.createNewFile();
             FileOutputStream fos = new FileOutputStream(convFile);
             fos.write(file.getBytes());
@@ -29,7 +29,7 @@ public class FileConverter {
 
     public static File convertTozip(List<File> files) {
         try {
-            FileOutputStream fos = new FileOutputStream("result.zip");
+            FileOutputStream fos = new FileOutputStream("data/tmp/result.zip");
             ZipOutputStream zos = new ZipOutputStream(fos);
             for (File file : files) {
                 addToZipFile(file, zos);
@@ -41,7 +41,7 @@ public class FileConverter {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new File("result.zip");
+        return new File("data/tmp/result.zip");
     }
 
     private static void addToZipFile(File file, ZipOutputStream zos) throws FileNotFoundException, IOException {
@@ -71,7 +71,7 @@ public class FileConverter {
         ZipEntry zipEntry = zis.getNextEntry();
         while (zipEntry != null) {
             String fileName = zipEntry.getName();
-            File newFile = new File(fileName);
+            File newFile = new File("data/tmp/" + fileName);
             unpacked.add(newFile);
             FileOutputStream fos = new FileOutputStream(newFile);
             int len;

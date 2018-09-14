@@ -62,7 +62,6 @@ public class Autocorrecter {
         Document xml = xmlBuilder.buildXML();
 
         String result = xml.getDocumentElement().getTextContent();
-        System.err.println("Result: " + result);
 
 
         return result;

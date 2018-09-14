@@ -50,10 +50,8 @@ public class AutocorrectController {
     @RequestMapping(path = "/correct", produces = "application/xml", method = RequestMethod.POST)
     public String correct(@RequestBody  String input) throws IOException {
 
-        System.out.println(input);
         TextPreProcessor prePro = new TextPreProcessor(input);
         String text = TextPreProcessor.getText();
-
 
         List<Token> tokenList = Tokenizer.tokenize(text);
 
