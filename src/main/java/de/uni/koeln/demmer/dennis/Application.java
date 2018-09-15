@@ -1,7 +1,7 @@
 package de.uni.koeln.demmer.dennis;
 
-import de.uni.koeln.demmer.dennis.controller.storage.StorageProperties;
-import de.uni.koeln.demmer.dennis.controller.storage.StorageService;
+//import de.uni.koeln.demmer.dennis.controller.storage.StorageProperties;
+//import de.uni.koeln.demmer.dennis.controller.storage.StorageService;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = {org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration.class})
-@EnableConfigurationProperties(StorageProperties.class)
+//@EnableConfigurationProperties(StorageProperties.class)
 
 //public class Application extends SpringBootServletInitializer{
 public class Application {
@@ -46,16 +46,6 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-
-
-
-    @Bean
-    CommandLineRunner init(StorageService storageService) {
-        return (args) -> {
-            storageService.deleteAll();
-            storageService.init();
-        };
-    }
 
 
 

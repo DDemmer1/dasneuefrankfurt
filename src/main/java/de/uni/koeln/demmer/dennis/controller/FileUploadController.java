@@ -1,55 +1,38 @@
 package de.uni.koeln.demmer.dennis.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 import Cheiron.Cheiron;
 import DnfWrapper.DNFUtil;
-import de.uni.koeln.demmer.dennis.controller.storage.StorageFileNotFoundException;
-import de.uni.koeln.demmer.dennis.controller.storage.StorageService;
 import de.uni.koeln.demmer.dennis.model.autocorrect.Util.*;
 import de.uni.koeln.demmer.dennis.model.ner.util.CheironParser;
 import de.uni.koeln.demmer.dennis.model.ner.util.NamedEntity;
 import de.uni.koeln.demmer.dennis.model.ner.util.NerXmlBuilder;
-import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.w3c.dom.Document;
-import org.w3c.dom.Text;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @CrossOrigin(maxAge = 3600)
 @RestController
 public class FileUploadController {
 
-//    private final StorageService storageService;
-
-//    @Autowired
-//    public FileUploadController(StorageService storageService) {
-//        this.storageService = storageService;
-//    }
 
 
     @PostMapping("/uploadtxt")
@@ -138,17 +121,6 @@ public class FileUploadController {
                 .contentType(MediaType.parseMediaType("application/zip"))
                 .body(resource);
     }
-
-
-
-
-
-
-//
-//    @ExceptionHandler(StorageFileNotFoundException.class)
-//    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-//        return ResponseEntity.notFound().build();
-//    }
 
 
 
