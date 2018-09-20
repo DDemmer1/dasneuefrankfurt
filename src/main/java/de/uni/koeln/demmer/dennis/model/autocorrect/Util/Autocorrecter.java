@@ -1,22 +1,11 @@
 package de.uni.koeln.demmer.dennis.model.autocorrect.Util;
 
-import edu.stanford.nlp.ling.tokensregex.PhraseTable;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import java.util.List;
 
 public class Autocorrecter {
-
-    public Token getBestGuess(Token token) {
-
-        //TODO hmm implementation
-
-        return token;
-
-    }
 
 
     public Document autocorrect(Document doc) {
@@ -51,15 +40,14 @@ public class Autocorrecter {
         for (Token token : tokenList) {
             if (!token.getMostSimiliar().isEmpty() && token.getOrigin().contains("f")) {
                 token.setOrigin(token.getMostSimiliar().iterator().next());
-//              token.setOrigin((String)token.getMostSimiliar().toArray()[0]);
             }
         }
 
 
-        XMLBuilder xmlBuilder = new XMLBuilder(tokenList);
+        AutocorrectXMLBuilder autocorrectXmlBuilder = new AutocorrectXMLBuilder(tokenList);
 
 
-        Document xml = xmlBuilder.buildXML();
+        Document xml = autocorrectXmlBuilder.buildXML();
 
         String result = xml.getDocumentElement().getTextContent();
 

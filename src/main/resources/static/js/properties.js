@@ -10,10 +10,8 @@ document.getElementById("correct").innerHTML = "curl -d \"Das ist ein Test von D
 
 
 //Upload TXT
-document.getElementById("uploadtxt").innerHTML = " curl -d \"@test.txt\" -H \"Content-Type:\n" +
-    "            application/txt\" -X POST " + window.location.href + "uploadtxt";
+document.getElementById("uploadtxt").innerHTML = " curl -i -F 'file=@test1.txt' "+ window.location.href +"txt/correct";
 
 
 //Upload ZIP
-document.getElementById("uploadzip").innerHTML = " curl -d \"@test.zip\" -H \"Content-Type:\n" +
-    "            application/txt\" -X POST " + window.location.href + "uploadzip";
+document.getElementById("uploadzip").innerHTML = " curl -i -F 'file=@test.zip' " + window.location.href + "zip/true";

@@ -9,16 +9,15 @@ import de.uni.koeln.demmer.dennis.model.ner.util.NerXmlBuilder;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.w3c.dom.Document;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,60 +28,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * REST Controller für den Upload von Dateien für die Named-entity recognition.
+ * Cross Origin ist aktiviert.
+ */
 @CrossOrigin(maxAge = 3600)
 @RestController
 public class FileUploadController {
 
 
-
-    @PostMapping("/uploadtxt")
-    public String handleFileUpload(@RequestParam("file") MultipartFile file,
-            RedirectAttributes redirectAttributes) throws IOException {
-
+    /**
+     * Request mapping auf '/uploadtxt' für den Upload von Text-Dateien
+     * Wenn eine Auto-Korrektur für Frakturfehler durchgeführt werden soll muss der parameter 'correct' gesetzt werden.
+     * Wenn eine Named-entity recognition durchgeführt werden soll muss der Parameter 'ner' gesetzt werden.
+     *
+     * @param file MultipartFile mit einer Text Datei als Inhalt
+     * @return Getaggte XML-Datei
+     * @throws IOException
+     */
+    @PostMapping("/txt/{param}")
+    public String handleFileUpload(@PathVariable("param") String param, @RequestParam("file") MultipartFile file) throws IOException {
 
 
         File convFile = FileConverter.convertToFile(file);
 
-        String input ="";
-        try {
-            input = TextUtil.readFile(convFile.getPath(), StandardCharsets.ISO_8859_1);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        if (param.equals("correct")) {
+
+            String input = "";
+            try {
+                input = TextUtil.readFile(convFile.getPath(), StandardCharsets.ISO_8859_1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            TextPreProcessor prePro = new TextPreProcessor(input);
+            String text = TextPreProcessor.getText();
+
+
+            List<Token> tokenList = Tokenizer.tokenize(text);
+
+            TokenProcessor tokenProcessor = new TokenProcessor();
+            tokenList = tokenProcessor.process(tokenList);
+
+            AutocorrectXMLBuilder autocorrectXmlBuilder = new AutocorrectXMLBuilder(tokenList);
+            Document xml = autocorrectXmlBuilder.buildXML();
+            return TextUtil.readFile(autocorrectXmlBuilder.getResult().getPath(), StandardCharsets.UTF_8);
+
         }
 
-        TextPreProcessor prePro = new TextPreProcessor(input);
-        String text = TextPreProcessor.getText();
 
 
-        List<Token> tokenList = Tokenizer.tokenize(text);
-
-        TokenProcessor tokenProcessor = new TokenProcessor();
-        tokenList = tokenProcessor.process(tokenList);
-
-        XMLBuilder xmlBuilder = new XMLBuilder(tokenList);
-        Document xml = xmlBuilder.buildXML();
-
-        return TextUtil.readFile(xmlBuilder.getResult().getPath(),StandardCharsets.UTF_8);
-
-    }
+        else if(param.equals("ner")) {
 
 
-
-    @PostMapping("/uploadzip")
-    public ResponseEntity<Resource> handleZIPUpload(@RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) throws IOException {
-
-
-        File convFile = FileConverter.convertToFile(file);
-        List<File> unpacked = FileConverter.unpackZIP(convFile);
-
-
-        List<File> results = new ArrayList<>();
-
-
-        int i = 0;
-        for (File unpackedFile: unpacked) {
-            String text = TextUtil.readFile(unpackedFile.getPath(),StandardCharsets.UTF_8);
+            String text = TextUtil.readFile(convFile.getPath(), StandardCharsets.ISO_8859_1);
 
             //NER
             try {
@@ -96,22 +96,79 @@ public class FileUploadController {
 
             NerXmlBuilder nerXmlBuilder = new NerXmlBuilder();
             List<NamedEntity> nerList = new CheironParser().parseCheironXML(new File("data/out/text.xml"));
-            nerXmlBuilder.buildXML(nerList,text);
+            nerXmlBuilder.buildXML(nerList, text);
 
-            File xmloutput = new File("data/out/text.xml");
-            File toZIP = new File("data/ner/text"+i+".xml");
+            File xmloutput = new File("data/ner/taggedNER.xml");
+
+
+            return TextUtil.readFile(xmloutput.getPath(), StandardCharsets.UTF_8);
+        } else {
+            throw new IllegalArgumentException();
+        }
+
+    }
+
+
+    /**
+     * Request mapping auf '/zip/{param}' um ZIP Dateien mit Textinhalten hochzuladen.
+     * Um eine automatische Frakturfehler Korrektur zu aktivieren muss der Parameter auf 'true' gesetzt werden.
+     * Um eine automatische Frakturfehler Korrektur zu deaktivieren muss der Parameter auf 'false' gesetzt werden.
+     *
+     * Es wird eine gepackte ZIP Datei zurückgegeben die getaggte XML Dateien enthält.
+     *
+     * @param param
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/zip/{param}")
+    public ResponseEntity<Resource> handleZIPUpload(@PathVariable("param") String param,@RequestParam("file") MultipartFile file) throws IOException {
+
+        if(!param.equals("false") && !param.equals("true")){
+            throw new IllegalArgumentException();
+        }
+
+
+        File convFile = FileConverter.convertToFile(file);
+        List<File> unpacked = FileConverter.unpackZIP(convFile);
+        List<File> results = new ArrayList<>();
+
+
+        int i = 0;
+        for (File unpackedFile : unpacked) {
+            String text = TextUtil.readFile(unpackedFile.getPath(), StandardCharsets.UTF_8);
+
+            //NER
+            try {
+                if(param.equals("true")){
+                    text = new Autocorrecter().fracturCorrect(text);
+                }
+                DNFUtil.clearCheiron();
+                Cheiron.findEntitys(text);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            NerXmlBuilder nerXmlBuilder = new NerXmlBuilder();
+            List<NamedEntity> nerList = new CheironParser().parseCheironXML(new File("data/out/text.xml"));
+            nerXmlBuilder.buildXML(nerList, text);
+
+            File xmloutput = new File("data/ner/taggedNER.xml");
+            File toZIP = new File("data/ner/text" + i + ".xml");
             Files.copy(xmloutput.toPath(), toZIP.toPath());
             i++;
         }
 
         for (int j = 0; j < i; j++) {
-            results.add(new File("data/ner/text"+j+".xml"));
+            results.add(new File("data/ner/text" + j + ".xml"));
         }
 
         File resultZIP = FileConverter.convertTozip(results);
 
-        HttpHeaders headers = new HttpHeaders(); headers.add(HttpHeaders.CONTENT_DISPOSITION
-                ,"attachment; filename=result.zip");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION
+                , "attachment; filename=result.zip");
         Path path = Paths.get(resultZIP.getAbsolutePath());
         ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
 
@@ -124,5 +181,10 @@ public class FileUploadController {
 
 
 
-
+    @ExceptionHandler(IllegalArgumentException.class)
+    private void badRequests(HttpServletResponse response) throws IOException {
+        response.sendError(HttpStatus.BAD_REQUEST.value());
+    }
 }
+
+

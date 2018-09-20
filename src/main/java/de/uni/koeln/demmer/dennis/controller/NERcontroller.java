@@ -9,24 +9,32 @@ import de.uni.koeln.demmer.dennis.model.ner.util.NamedEntity;
 import de.uni.koeln.demmer.dennis.model.ner.util.NerXmlBuilder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+
+/**
+ * Controller für die Named-entity recognition
+ *
+ */
 @CrossOrigin(maxAge = 3600)
 @RestController
 public class NERcontroller {
 
 
+    /**
+     * Mapping auf '/ner'. Es wird eine named-entity recognition durchgeführt und eine getaggte XML Datei zurückgegeben
+     *
+     * @param text
+     * @return
+     * @throws IOException
+     */
     @RequestMapping(path = "/ner", produces = "application/xml", method = RequestMethod.POST)
     public String ner(@RequestBody  String text) throws IOException {
 
         try {
-
-
-
 
 
             DNFUtil.clearCheiron();
@@ -44,7 +52,7 @@ public class NERcontroller {
             e.printStackTrace();
         }
 
-        return TextUtil.readFile(new File("data/out/text.xml").getPath(), StandardCharsets.UTF_8);
+        return TextUtil.readFile(new File("data/ner/taggedNER.xml").getPath(), StandardCharsets.UTF_8);
     }
 
 }

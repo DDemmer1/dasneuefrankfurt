@@ -134,7 +134,6 @@ public class Cheiron {
 		}
 
 		for (Entry<String, String> leaf : tree.get(MethodHandles.lookup().lookupClass().getName()).entrySet()){
-			System.out.println(leaf.getKey()+"   |   "+ leaf.getValue());
 			set(leaf.getKey(), leaf.getValue());
 		}
 

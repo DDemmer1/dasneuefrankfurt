@@ -1,5 +1,7 @@
 package de.uni.koeln.demmer.dennis.model.autocorrect.Util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -17,14 +19,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 
-public class XMLBuilder {
+public class AutocorrectXMLBuilder {
 
 
     private List<Token> tokenList;
     private String text;
     private File streamResult;
 
-    public XMLBuilder(List<Token> tokenList) {
+    public AutocorrectXMLBuilder(List<Token> tokenList) {
         this.tokenList = tokenList;
         text = TextPreProcessor.getText();
     }
@@ -101,8 +103,8 @@ public class XMLBuilder {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
             Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+//            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+//            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             DOMSource source = new DOMSource(doc);
             File xmlFile = new File("data/tmp/taggedText.xml");
@@ -111,8 +113,9 @@ public class XMLBuilder {
 
             streamResult = xmlFile;
 
+            Logger logger = LoggerFactory.getLogger(AutocorrectXMLBuilder.class);
+            logger.info("Temporary autocorrect-XML created");
 
-            System.out.println("File saved!");
             return doc;
         } catch (ParserConfigurationException pce) {
             pce.printStackTrace();

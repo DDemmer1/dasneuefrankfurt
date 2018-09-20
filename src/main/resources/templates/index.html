@@ -103,7 +103,7 @@
         <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
     <pre class="lead"><xmp>        <?xml version="1.0" encoding="UTF-8"?>
         <text>
-            Das ist ein Test von <name id="0" absoluteFreq="1" begin="21" end="34">Dennis Demmer</name>.
+            Das ist ein Test von <namedentity id="0" absoluteFreq="1" begin="21" end="34">Dennis Demmer</namedentity>.
         </text></xmp></pre>
         </div>
         <br>
@@ -180,8 +180,7 @@
         <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
             <div class=" text-center container">
                 <!-- Target -->
-                <code>$</code><code style="color: black" id="uploadtxt"> curl -d "@test.txt" -H "Content-Type:
-                application/txt" -X POST http://ddemmmer.ngrok.io/uploadtxt</code>
+                <code>$</code><code style="color: black" id="uploadtxt">curl -i -F 'file=@test1.txt' http://localhost:9090/uploadtxt/correct</code>
                 <!-- Trigger -->
                 <button style="padding: 2px 8px 5px 8px;position: relative;left:10.9%;" class="btn"
                         data-clipboard-target="#uploadtxt">
@@ -225,8 +224,7 @@
         <div class="container" style="background-color: #E9E9E9	; border-radius: 2px;">
             <div class=" text-center container">
                 <!-- Target -->
-                <code>$</code><code style="color: black" id="uploadzip"> curl -d "@test.zip" -H "Content-Type:
-                application/zip" -X POST http://ddemmmer.ngrok.io/correct</code>
+                <code>$</code><code style="color: black" id="uploadzip"> curl -F 'file=@test.zip' http://localhost:8080/das-neue-frankfurt-1.0-SNAPSHOT/uploadzip</code>
                 <!-- Trigger -->
                 <button style="padding: 2px 8px 5px 8px;position: relative;left:12%;" class="btn"
                         data-clipboard-target="#uploadzip">

@@ -1,5 +1,8 @@
 package de.uni.koeln.demmer.dennis.model.autocorrect.Util;
 
+import de.uni.koeln.demmer.dennis.controller.DictionaryController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -46,7 +49,9 @@ public class FileConverter {
 
     private static void addToZipFile(File file, ZipOutputStream zos) throws FileNotFoundException, IOException {
 
-        System.out.println("Writing '" + file.getName() + "' to zip file");
+        Logger logger = LoggerFactory.getLogger(FileConverter.class);
+
+        logger.info("Writing '" + file.getName() + "' to zip file");
 
         FileInputStream fis = new FileInputStream(file);
         ZipEntry zipEntry = new ZipEntry(file.getName());

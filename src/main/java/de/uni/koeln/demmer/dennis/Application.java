@@ -15,17 +15,17 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import java.io.File;
+
 
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = {org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration.class})
-//@EnableConfigurationProperties(StorageProperties.class)
+
+
+// Boot Config Jetty Server
 
 //public class Application extends SpringBootServletInitializer{
-public class Application {
-
-
-
-
+//
 //    @Override
 //    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
 //        return configureApplication(builder);
@@ -39,8 +39,9 @@ public class Application {
 //        return builder.sources(Application.class).bannerMode(Banner.Mode.OFF);
 //    }
 
-//    ---------------------------------------------------
 
+//    Development Boot
+public class Application {
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Application.class, args);

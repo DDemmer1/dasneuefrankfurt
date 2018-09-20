@@ -64,14 +64,25 @@ public class NerXmlBuilder {
                     id++;
                 }
 
+                //append rest of text
+                if(entityList.get(entityList.size()-1).getEnd()!=text.length()) {
 
+                    start = entityList.get(entityList.size() - 1).getEnd();
+                    end = text.length();
+
+                    String betweenWords = text.substring(start, end);
+
+                    String changedEncoding = new String(betweenWords.getBytes(), StandardCharsets.UTF_8);
+                    Text txt = doc.createTextNode(changedEncoding);
+
+                    //append text between words
+                    rootElement.appendChild(txt);
+                }
 
                 // write the content into xml file
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
 
                 Transformer transformer = transformerFactory.newTransformer();
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
                 transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
                 DOMSource source = new DOMSource(doc);
                 File xmlFile = new File("data/ner/taggedNER.xml");
